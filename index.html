@@ -6,8 +6,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#ffffff">
-    <title>Team Fund Tracker</title>
+    <title>Team Fund Tracker - Firebase</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -21,6 +25,18 @@
             padding: 20px;
         }
 
+        /* Prevent selection and copying */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        * {
+            -webkit-touch-callout: none;
+        }
+
         .container {
             max-width: 900px;
             margin: 0 auto;
@@ -30,20 +46,53 @@
             padding: 30px;
         }
 
-        h1 {
-            text-align: center;
-            color: #333;
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
-            font-size: 2em;
         }
 
-        h2 {
+        h1 {
             color: #333;
-            margin-top: 25px;
-            margin-bottom: 15px;
-            font-size: 1.1em;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 10px;
+            font-size: 2em;
+            margin: 0;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .admin-btn {
+            background: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .admin-btn:hover {
+            background: #1976D2;
         }
 
         .metrics {
@@ -81,6 +130,12 @@
             color: #333;
         }
 
+        .loading {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+
         .chart-section {
             margin-bottom: 30px;
             text-align: center;
@@ -88,11 +143,24 @@
 
         .chart-section h2 {
             text-align: left;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
         }
 
         #expenseChart {
             max-width: 400px;
             margin: 0 auto;
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
         }
 
         .details {
@@ -148,6 +216,53 @@
 
         .plan-item strong {
             color: #2e7d32;
+        }
+
+        /* PENDING PAYMENTS SECTION */
+        .pending-section {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #FF9800;
+            margin-bottom: 20px;
+        }
+
+        .pending-section h3 {
+            color: #e65100;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+
+        .pending-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .pending-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #FF9800;
+        }
+
+        .pending-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 1em;
+        }
+
+        .pending-month {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 3px;
+        }
+
+        .empty-message {
+            color: #999;
+            padding: 15px;
+            text-align: center;
+            font-style: italic;
         }
 
         .outing-timeline {
@@ -227,17 +342,181 @@
             color: #2196F3;
         }
 
-        /* Disable text selection and copying */
-        .container {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+        /* ADMIN MODAL */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease-out;
         }
 
-        /* Hide browser context menu */
-        * {
-            -webkit-touch-callout: none;
+        .admin-modal.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .admin-modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 40px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s ease-out;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .admin-modal h2 {
+            margin-top: 0;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .close-modal:hover {
+            color: black;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .login-form input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .login-form button {
+            padding: 10px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-form button:hover {
+            background: #1976D2;
+        }
+
+        .login-error {
+            color: red;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .admin-section:last-child {
+            border-bottom: none;
+        }
+
+        .admin-section h3 {
+            color: #1565c0;
+            margin-bottom: 12px;
+            font-size: 1em;
+        }
+
+        .admin-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .admin-form input, .admin-form select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+
+        .admin-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+        }
+
+        .admin-form button {
+            padding: 10px 20px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .admin-form button:hover {
+            background: #1976D2;
+        }
+
+        .logout-btn {
+            background: #f44336;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .logout-btn:hover {
+            background: #da190b;
+        }
+
+        .success-msg {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
         }
 
         @media (max-width: 600px) {
@@ -256,52 +535,81 @@
             .metrics {
                 grid-template-columns: 1fr;
             }
+
+            .header-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .admin-modal-content {
+                width: 95%;
+                margin: 20% auto;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Team Fund Tracker</h1>
-
-        <div class="metrics">
-            <div class="metric">
-                <div class="metric-label">Total Collected</div>
-                <div class="metric-value">₹16,801</div>
-            </div>
-            <div class="metric orange">
-                <div class="metric-label">Total Spent</div>
-                <div class="metric-value">₹12,783</div>
-            </div>
-            <div class="metric blue">
-                <div class="metric-label">Current Balance</div>
-                <div class="metric-value">₹4,018</div>
+        <!-- HEADER WITH ADMIN BUTTON -->
+        <div class="header-section">
+            <h1>Team Fund Tracker</h1>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span id="statusText">Connecting...</span>
+                </div>
+                <button class="admin-btn" onclick="openAdminModal()">🔧 Admin</button>
             </div>
         </div>
 
-        <div class="chart-section">
+        <!-- METRICS -->
+        <div class="metrics">
+            <div class="metric">
+                <div class="metric-label">Total Collected</div>
+                <div class="metric-value" id="totalCollected">₹0</div>
+            </div>
+            <div class="metric orange">
+                <div class="metric-label">Total Spent</div>
+                <div class="metric-value" id="totalSpent">₹0</div>
+            </div>
+            <div class="metric blue">
+                <div class="metric-label">Current Balance</div>
+                <div class="metric-value" id="currentBalance">₹0</div>
+            </div>
+        </div>
+
+        <!-- LOADING MESSAGE -->
+        <div id="loadingMessage" class="loading">Loading data from Firebase...</div>
+
+        <!-- CHART -->
+        <div class="chart-section" id="chartSection" style="display: none;">
             <h2>Spending Breakdown</h2>
             <canvas id="expenseChart"></canvas>
         </div>
 
-        <h2>Expense Details</h2>
-        <div class="details">
-            <div class="detail-item">
-                <div class="detail-label">Barbeque</div>
-                <div class="detail-value">₹9,283</div>
-                <div class="detail-percent">55.2% of total</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Farewell Gift</div>
-                <div class="detail-value">₹3,500</div>
-                <div class="detail-percent">20.8% of total</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Available Balance</div>
-                <div class="detail-value">₹4,018</div>
-                <div class="detail-percent">23.9% of total</div>
+        <!-- DETAILS -->
+        <div id="detailsSection" style="display: none;">
+            <h2>Expense Details</h2>
+            <div class="details">
+                <div class="detail-item">
+                    <div class="detail-label">Barbeque</div>
+                    <div class="detail-value" id="barbequeAmount">₹0</div>
+                    <div class="detail-percent" id="barbequePercent">0% of total</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Farewell Gift</div>
+                    <div class="detail-value" id="farewellAmount">₹0</div>
+                    <div class="detail-percent" id="farewellPercent">0% of total</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Available Balance</div>
+                    <div class="detail-value" id="availableBalance">₹0</div>
+                    <div class="detail-percent" id="balancePercent">0% of total</div>
+                </div>
             </div>
         </div>
 
+        <!-- MONTHLY COLLECTION PLAN -->
         <h2>Monthly Collection Plan</h2>
         <div class="smart-plan">
             <h3>💰 Ongoing Collection</h3>
@@ -309,27 +617,30 @@
             <div class="plan-item">Collection will happen every month to sustain team activities</div>
         </div>
 
+        <!-- NEXT OUTING TIMELINE -->
         <h2>Next Team Outing Planning</h2>
         <div class="outing-timeline">
             <h3>🎉 When Will We Plan the Next Outing?</h3>
             <div class="timeline-item">Target Fund: <strong>₹10,000</strong></div>
-            <div class="timeline-item">Current Balance: <strong>₹4,018</strong></div>
-            <div class="timeline-item">Amount Needed: <strong>₹5,982</strong></div>
-            <div class="timeline-item">At ₹2,800/month, we need: <strong>~2-3 months</strong></div>
+            <div class="timeline-item">Current Balance: <strong id="timelineBalance">₹0</strong></div>
+            <div class="timeline-item">Amount Needed: <strong id="amountNeeded">₹0</strong></div>
+            <div class="timeline-item">Months to Target: <strong id="monthsToTarget">Calculating...</strong></div>
             
             <div class="progress-bar">
-                <div class="progress-fill">40%</div>
+                <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
             </div>
-
-            <div class="timeline-item" style="margin-top: 15px;">
-                <strong>Expected Timeline:</strong>
-            </div>
-            <div class="timeline-item">📅 <strong>July 2026:</strong> ₹4,018 (Current)</div>
-            <div class="timeline-item">📅 <strong>August 2026:</strong> ₹6,818 (Current + ₹2,800)</div>
-            <div class="timeline-item">📅 <strong>September 2026:</strong> ₹9,618 (Current + ₹5,600)</div>
-            <div class="timeline-item">📅 <strong>October 2026:</strong> ₹12,418 ✅ (Ready for next outing!)</div>
         </div>
 
+        <!-- PENDING PAYMENTS SECTION -->
+        <h2>⚠️ Pending Payments</h2>
+        <div class="pending-section">
+            <h3>Members Who Haven't Paid</h3>
+            <div id="pendingList" class="pending-list">
+                <div class="empty-message">No pending payments yet! 👍</div>
+            </div>
+        </div>
+
+        <!-- FEEDBACK -->
         <h2>Suggestions & Feedback</h2>
         <div class="feedback-section">
             <h3>💭 We Value Your Input</h3>
@@ -343,16 +654,94 @@
         </div>
     </div>
 
+    <!-- ADMIN MODAL -->
+    <div id="adminModal" class="admin-modal">
+        <div class="admin-modal-content">
+            <button class="close-modal" onclick="closeAdminModal()">&times;</button>
+            
+            <!-- LOGIN SECTION -->
+            <div id="loginSection">
+                <h2>🔐 Admin Login</h2>
+                <div id="loginError" class="login-error"></div>
+                <form class="login-form" onsubmit="handleLogin(event)">
+                    <input type="text" id="username" placeholder="Username" autocomplete="off" required>
+                    <input type="password" id="password" placeholder="Password" autocomplete="off" required>
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+
+            <!-- ADMIN PANEL -->
+            <div id="adminPanel" class="admin-panel">
+                <div id="successMsg" class="success-msg" style="display: none;"></div>
+
+                <!-- Add Monthly Collection -->
+                <div class="admin-section">
+                    <h3>💰 Add Monthly Collection</h3>
+                    <div class="admin-form">
+                        <div class="admin-form-row">
+                            <input type="number" id="newAmount" placeholder="Amount (e.g., 2800)" min="0">
+                            <input type="month" id="collectionMonth" required>
+                            <button onclick="addMonthlyCollection()">Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Pending Payment -->
+                <div class="admin-section">
+                    <h3>⚠️ Add Pending Payment</h3>
+                    <div class="admin-form">
+                        <input type="text" id="memberName" placeholder="Member Name">
+                        <div class="admin-form-row">
+                            <select id="pendingMonth" required>
+                                <option value="">Select Month</option>
+                                <option value="January">January 2026</option>
+                                <option value="February">February 2026</option>
+                                <option value="March">March 2026</option>
+                                <option value="April">April 2026</option>
+                                <option value="May">May 2026</option>
+                                <option value="June">June 2026</option>
+                                <option value="July">July 2026</option>
+                                <option value="August">August 2026</option>
+                                <option value="September">September 2026</option>
+                                <option value="October">October 2026</option>
+                                <option value="November">November 2026</option>
+                                <option value="December">December 2026</option>
+                            </select>
+                            <input type="text" id="pendingAmount" placeholder="Amount" value="200">
+                            <button onclick="addPendingPayment()">Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logout -->
+                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Prevent right-click context menu
+        // ⚠️ REPLACE WITH YOUR FIREBASE CONFIG ⚠️
+        const firebaseConfig = {
+            apiKey: "AIzaSyAooUQPo5fQCDmhBSfILJzVM8GJgwgO5gk",
+            authDomain: "team-fund-369f3.firebaseapp.com",
+            projectId: "team-fund-369f3",
+            databaseURL: "https://team-fund-369f3-default-rtdb.firebaseio.com",
+            storageBucket: "team-fund-369f3.firebasestorage.app",
+            messagingSenderId: "887554722010",
+            appId: "1:887554722010:web:60de8a5ba00a20abdf3de3"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Prevent right-click and developer tools
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             return false;
         });
 
-        // Prevent developer tools and customization
         document.addEventListener('keydown', function(e) {
-            // Prevent F12, Ctrl+Shift+I, Ctrl+Shift+C, Ctrl+Shift+J
             if (e.key === 'F12' || 
                 (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) ||
                 (e.ctrlKey && e.key === 'u')) {
@@ -361,35 +750,284 @@
             }
         });
 
-        // Disable text selection
         document.addEventListener('selectstart', function(e) {
             e.preventDefault();
             return false;
         });
 
-        // Render Chart
-        const ctx = document.getElementById('expenseChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Barbeque', 'Farewell Gift', 'Balance'],
-                datasets: [{
-                    data: [9283, 3500, 4018],
-                    backgroundColor: ['#FF9800', '#9C27B0', '#4CAF50'],
-                    borderColor: ['#FF9800', '#9C27B0', '#4CAF50'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
+        let chart = null;
+        let isLoggedIn = false;
+        let fundData = {
+            totalCollected: 16801,
+            barbeque: 9283,
+            farewell: 3500,
+            pendingPayments: []
+        };
+
+        // Initialize
+        window.onload = function() {
+            loadDataFromFirebase();
+            setDefaultMonth();
+        };
+
+        function setDefaultMonth() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            document.getElementById('collectionMonth').value = `${year}-${month}`;
+        }
+
+        function loadDataFromFirebase() {
+            document.getElementById('statusText').textContent = 'Connecting...';
+            
+            // Load total collected
+            database.ref('totalCollected').on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    fundData.totalCollected = snapshot.val();
                 }
+                updateDashboard();
+            }, (error) => {
+                console.log('Error loading data:', error);
+                document.getElementById('statusText').textContent = 'Connection error';
+                updateDashboard();
+            });
+
+            // Load expenses
+            database.ref('expenses').on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const expenses = snapshot.val();
+                    fundData.barbeque = expenses.barbeque || 0;
+                    fundData.farewell = expenses.farewell || 0;
+                }
+                updateDashboard();
+            });
+
+            // Load pending payments
+            database.ref('pendingPayments').on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    fundData.pendingPayments = Object.values(snapshot.val());
+                } else {
+                    fundData.pendingPayments = [];
+                }
+                updateDashboard();
+            });
+
+            // Update status
+            setTimeout(() => {
+                document.getElementById('statusText').textContent = 'Live';
+            }, 2000);
+        }
+
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.add('active');
+            isLoggedIn = false;
+            showLoginSection();
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('active');
+            isLoggedIn = false;
+            showLoginSection();
+            clearForm();
+        }
+
+        function showLoginSection() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('adminPanel').classList.remove('active');
+            clearLoginErrors();
+        }
+
+        function showAdminPanel() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('adminPanel').classList.add('active');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'admin' && password === 'admin') {
+                isLoggedIn = true;
+                clearLoginErrors();
+                showAdminPanel();
+            } else {
+                document.getElementById('loginError').textContent = '❌ Invalid username or password!';
             }
-        });
+        }
+
+        function handleLogout() {
+            isLoggedIn = false;
+            showLoginSection();
+            clearForm();
+        }
+
+        function clearLoginErrors() {
+            document.getElementById('loginError').textContent = '';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function clearForm() {
+            document.getElementById('newAmount').value = '';
+            document.getElementById('memberName').value = '';
+            document.getElementById('pendingMonth').value = '';
+            document.getElementById('pendingAmount').value = '200';
+            document.getElementById('successMsg').style.display = 'none';
+        }
+
+        function showSuccessMsg(message) {
+            const successMsg = document.getElementById('successMsg');
+            successMsg.textContent = '✅ ' + message;
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+        }
+
+        function addMonthlyCollection() {
+            const amount = parseFloat(document.getElementById('newAmount').value);
+
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            // Update Firebase
+            const newTotal = fundData.totalCollected + amount;
+            database.ref('totalCollected').set(newTotal);
+
+            document.getElementById('newAmount').value = '';
+            showSuccessMsg(`Collection of ₹${amount.toLocaleString()} added!`);
+        }
+
+        function addPendingPayment() {
+            const name = document.getElementById('memberName').value.trim();
+            const month = document.getElementById('pendingMonth').value;
+            const amount = document.getElementById('pendingAmount').value;
+
+            if (!name) {
+                alert('Please enter member name');
+                return;
+            }
+
+            if (!month) {
+                alert('Please select month');
+                return;
+            }
+
+            // Add to Firebase
+            const newPaymentRef = database.ref('pendingPayments').push();
+            newPaymentRef.set({
+                name: name,
+                month: month,
+                amount: amount,
+                timestamp: Date.now()
+            });
+
+            document.getElementById('memberName').value = '';
+            document.getElementById('pendingMonth').value = '';
+            showSuccessMsg(`${name} marked as pending for ${month}`);
+        }
+
+        function updateDashboard() {
+            const totalCollected = fundData.totalCollected;
+            const totalSpent = fundData.barbeque + fundData.farewell;
+            const balance = totalCollected - totalSpent;
+
+            // Update metrics
+            document.getElementById('totalCollected').textContent = '₹' + totalCollected.toLocaleString();
+            document.getElementById('totalSpent').textContent = '₹' + totalSpent.toLocaleString();
+            document.getElementById('currentBalance').textContent = '₹' + balance.toLocaleString();
+
+            // Update details
+            const barbequePercent = totalCollected > 0 ? ((fundData.barbeque / totalCollected) * 100).toFixed(1) : 0;
+            const farewellPercent = totalCollected > 0 ? ((fundData.farewell / totalCollected) * 100).toFixed(1) : 0;
+            const balancePercent = totalCollected > 0 ? ((balance / totalCollected) * 100).toFixed(1) : 0;
+
+            document.getElementById('barbequeAmount').textContent = '₹' + fundData.barbeque.toLocaleString();
+            document.getElementById('barbequePercent').textContent = barbequePercent + '% of total';
+            document.getElementById('farewellAmount').textContent = '₹' + fundData.farewell.toLocaleString();
+            document.getElementById('farewellPercent').textContent = farewellPercent + '% of total';
+            document.getElementById('availableBalance').textContent = '₹' + balance.toLocaleString();
+            document.getElementById('balancePercent').textContent = balancePercent + '% of total';
+
+            // Update timeline
+            const targetFund = 10000;
+            const neededAmount = Math.max(0, targetFund - balance);
+            const monthsNeeded = Math.ceil(neededAmount / 2800);
+            const progressPercent = Math.min(100, (balance / targetFund) * 100);
+
+            document.getElementById('timelineBalance').textContent = '₹' + balance.toLocaleString();
+            document.getElementById('amountNeeded').textContent = '₹' + neededAmount.toLocaleString();
+            document.getElementById('monthsToTarget').textContent = monthsNeeded > 0 ? `~${monthsNeeded} month(s)` : 'Target reached! 🎉';
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+            document.getElementById('progressFill').textContent = progressPercent.toFixed(0) + '%';
+
+            // Show sections
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('chartSection').style.display = 'block';
+            document.getElementById('detailsSection').style.display = 'block';
+
+            // Update chart
+            updateChart(fundData.barbeque, fundData.farewell, balance);
+            updatePendingList();
+        }
+
+        function updatePendingList() {
+            const pendingList = document.getElementById('pendingList');
+            
+            if (!fundData.pendingPayments || fundData.pendingPayments.length === 0) {
+                pendingList.innerHTML = '<div class="empty-message">No pending payments yet! 👍</div>';
+                return;
+            }
+
+            pendingList.innerHTML = fundData.pendingPayments.map(payment => `
+                <div class="pending-item">
+                    <div class="pending-name">${payment.name}</div>
+                    <div class="pending-month">${payment.month} - ₹${payment.amount}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateChart(barbeque, farewell, balance) {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            
+            if (chart) {
+                chart.data.datasets[0].data = [barbeque, farewell, balance];
+                chart.update();
+            } else {
+                chart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Barbeque', 'Farewell Gift', 'Balance'],
+                        datasets: [{
+                            data: [barbeque, farewell, balance],
+                            backgroundColor: ['#FF9800', '#9C27B0', '#4CAF50'],
+                            borderColor: ['#FF9800', '#9C27B0', '#4CAF50'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('adminModal');
+            if (event.target == modal) {
+                closeAdminModal();
+            }
+        }
     </script>
 </body>
 </html>
