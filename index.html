@@ -30,11 +30,32 @@
             padding: 30px;
         }
 
-        h1 {
-            text-align: center;
-            color: #333;
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
             font-size: 2em;
+            margin: 0;
+        }
+
+        .admin-btn {
+            background: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: bold;
+        }
+
+        .admin-btn:hover {
+            background: #1976D2;
         }
 
         h2 {
@@ -126,6 +147,15 @@
             margin-top: 5px;
         }
 
+        .detail-date {
+            color: #666;
+            font-weight: bold;
+            margin-top: 8px;
+            font-size: 0.9em;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+        }
+
         .smart-plan {
             background: #e8f5e9;
             padding: 20px;
@@ -195,7 +225,92 @@
             font-weight: bold;
         }
 
-        .feedback-section {
+        /* PENDING PAYMENTS MODULE */
+        .pending-section {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #FF9800;
+            margin-bottom: 20px;
+        }
+
+        .pending-section h3 {
+            color: #e65100;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+
+        .pending-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .pending-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #FF9800;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .pending-info {
+            flex-grow: 1;
+        }
+
+        .pending-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 1em;
+        }
+
+        .pending-month {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 3px;
+        }
+
+        .pending-amount {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #FF9800;
+            text-align: right;
+        }
+
+        .pending-total {
+            background: #FFE0B2;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #FF6F00;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pending-total-label {
+            font-weight: bold;
+            color: #E65100;
+            font-size: 1em;
+        }
+
+        .pending-total-amount {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #E65100;
+        }
+
+        .empty-message {
+            color: #999;
+            padding: 15px;
+            text-align: center;
+            font-style: italic;
+            grid-column: 1 / -1;
+        }
+
+.feedback-section {
             background: #e3f2fd;
             padding: 20px;
             border-radius: 6px;
@@ -227,7 +342,165 @@
             color: #2196F3;
         }
 
-        /* Disable text selection and copying */
+        /* ADMIN MODAL */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .admin-modal.active {
+            display: block;
+        }
+
+        .admin-modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 40px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .admin-modal h2 {
+            margin-top: 0;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .close-modal:hover {
+            color: black;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .login-form input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .login-form button {
+            padding: 10px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-form button:hover {
+            background: #1976D2;
+        }
+
+        .login-error {
+            color: red;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .admin-section:last-child {
+            border-bottom: none;
+        }
+
+        .admin-section h3 {
+            color: #1565c0;
+            margin-bottom: 12px;
+            font-size: 1em;
+        }
+
+        .admin-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .admin-form input, .admin-form select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+
+        .admin-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+        }
+
+        .admin-form button {
+            padding: 10px 20px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .admin-form button:hover {
+            background: #1976D2;
+        }
+
+        .logout-btn {
+            background: #f44336;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .logout-btn:hover {
+            background: #da190b;
+        }
+
+        .success-msg {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
         .container {
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -235,7 +508,6 @@
             user-select: none;
         }
 
-        /* Hide browser context menu */
         * {
             -webkit-touch-callout: none;
         }
@@ -256,12 +528,25 @@
             .metrics {
                 grid-template-columns: 1fr;
             }
+
+            .header-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .admin-modal-content {
+                width: 95%;
+                margin: 20% auto;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Team Fund Tracker</h1>
+        <div class="header-section">
+            <h1>Team Fund Tracker</h1>
+            <button class="admin-btn" onclick="openAdminModal()">🔧 Admin</button>
+        </div>
 
         <div class="metrics">
             <div class="metric">
@@ -289,11 +574,13 @@
                 <div class="detail-label">Barbeque</div>
                 <div class="detail-value">₹9,283</div>
                 <div class="detail-percent">55.2% of total</div>
+                <div class="detail-date" id="barbeque-date" style="color: #FF9800; font-weight: bold; margin-top: 8px; font-size: 0.9em;">📅 July 01, 2026</div>
             </div>
             <div class="detail-item">
                 <div class="detail-label">Farewell Gift</div>
                 <div class="detail-value">₹3,500</div>
                 <div class="detail-percent">20.8% of total</div>
+                <div class="detail-date" id="farewell-date" style="color: #9C27B0; font-weight: bold; margin-top: 8px; font-size: 0.9em;">📅 July 01, 2026</div>
             </div>
             <div class="detail-item">
                 <div class="detail-label">Available Balance</div>
@@ -330,6 +617,15 @@
             <div class="timeline-item">📅 <strong>October 2026:</strong> ₹12,418 ✅ (Ready for next outing!)</div>
         </div>
 
+        <!-- MODULE 1: PENDING PAYMENTS -->
+        <h2>⚠️ Pending Payments</h2>
+        <div class="pending-section">
+            <h3>Members Who Haven't Paid</h3>
+            <div id="pendingList" class="pending-list">
+                <div class="empty-message">No pending payments yet! 👍</div>
+            </div>
+        </div>
+
         <h2>Suggestions & Feedback</h2>
         <div class="feedback-section">
             <h3>💭 We Value Your Input</h3>
@@ -343,16 +639,76 @@
         </div>
     </div>
 
+    <!-- ADMIN MODAL -->
+    <div id="adminModal" class="admin-modal">
+        <div class="admin-modal-content">
+            <button class="close-modal" onclick="closeAdminModal()">&times;</button>
+            
+            <div id="loginSection">
+                <h2>🔐 Admin Login</h2>
+                <div id="loginError" class="login-error"></div>
+                <form class="login-form" onsubmit="handleLogin(event)">
+                    <input type="text" id="username" placeholder="Username" autocomplete="off" required>
+                    <input type="password" id="password" placeholder="Password" autocomplete="off" required>
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+
+            <div id="adminPanel" class="admin-panel">
+                <div id="successMsg" class="success-msg" style="display: none;"></div>
+
+                <!-- Add Pending Payment -->
+                <div class="admin-section">
+                    <h3>⚠️ Add Pending Payment</h3>
+                    <div class="admin-form">
+                        <input type="text" id="memberName" placeholder="Member Name (e.g., John)">
+                        <select id="pendingMonth" required>
+                            <option value="">Select Month</option>
+                            <option value="January">January 2026</option>
+                            <option value="February">February 2026</option>
+                            <option value="March">March 2026</option>
+                            <option value="April">April 2026</option>
+                            <option value="May">May 2026</option>
+                            <option value="June">June 2026</option>
+                            <option value="July">July 2026</option>
+                            <option value="August">August 2026</option>
+                            <option value="September">September 2026</option>
+                            <option value="October">October 2026</option>
+                            <option value="November">November 2026</option>
+                            <option value="December">December 2026</option>
+                        </select>
+                        <input type="number" id="pendingAmount" placeholder="Amount (e.g., 200)" min="0" value="200">
+                        <button onclick="addPendingPayment()">Add Pending</button>
+                    </div>
+                </div>
+
+                <!-- Manage Expenses -->
+                <div class="admin-section">
+                    <h3>💰 Update Expense Dates</h3>
+                    <div class="admin-form">
+                        <select id="expenseType" required>
+                            <option value="">Select Expense Type</option>
+                            <option value="barbeque">Barbeque</option>
+                            <option value="farewell">Farewell Gift</option>
+                        </select>
+                        <input type="date" id="expenseDate" required>
+                        <button onclick="updateExpenseDate()">Update Date</button>
+                    </div>
+                </div>
+
+<button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Prevent right-click context menu
+        // Prevent right-click and developer tools
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             return false;
         });
 
-        // Prevent developer tools and customization
         document.addEventListener('keydown', function(e) {
-            // Prevent F12, Ctrl+Shift+I, Ctrl+Shift+C, Ctrl+Shift+J
             if (e.key === 'F12' || 
                 (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) ||
                 (e.ctrlKey && e.key === 'u')) {
@@ -361,11 +717,226 @@
             }
         });
 
-        // Disable text selection
         document.addEventListener('selectstart', function(e) {
             e.preventDefault();
             return false;
         });
+
+        // Data storage
+        let pendingPayments = [];
+        let isLoggedIn = false;
+        let expenseDates = {
+            barbeque: '2026-07-01',
+            farewell: '2026-07-01'
+        };
+
+        // Initialize
+        window.onload = function() {
+            loadDataFromStorage();
+            updatePendingList();
+            updateExpenseDisplay();
+        };
+
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.add('active');
+            isLoggedIn = false;
+            showLoginSection();
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('active');
+            isLoggedIn = false;
+            showLoginSection();
+            clearForm();
+        }
+
+        function showLoginSection() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('adminPanel').classList.remove('active');
+            clearLoginErrors();
+        }
+
+        function showAdminPanel() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('adminPanel').classList.add('active');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'admin' && password === 'admin') {
+                isLoggedIn = true;
+                clearLoginErrors();
+                showAdminPanel();
+            } else {
+                document.getElementById('loginError').textContent = '❌ Invalid username or password!';
+            }
+        }
+
+        function handleLogout() {
+            isLoggedIn = false;
+            showLoginSection();
+            clearForm();
+        }
+
+        function clearLoginErrors() {
+            document.getElementById('loginError').textContent = '';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function clearForm() {
+            document.getElementById('memberName').value = '';
+            document.getElementById('pendingMonth').value = '';
+            document.getElementById('pendingAmount').value = '200';
+            document.getElementById('successMsg').style.display = 'none';
+        }
+
+        function showSuccessMsg(message) {
+            const successMsg = document.getElementById('successMsg');
+            successMsg.textContent = '✅ ' + message;
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+        }
+
+        function addPendingPayment() {
+            const name = document.getElementById('memberName').value.trim();
+            const month = document.getElementById('pendingMonth').value;
+            const amount = parseFloat(document.getElementById('pendingAmount').value);
+
+            if (!name) {
+                alert('Please enter member name');
+                return;
+            }
+
+            if (!month) {
+                alert('Please select month');
+                return;
+            }
+
+            if (!amount || amount <= 0) {
+                alert('Please enter valid amount');
+                return;
+            }
+
+            pendingPayments.push({
+                id: Date.now(),
+                name: name,
+                month: month,
+                amount: amount
+            });
+
+            saveDataToStorage();
+            document.getElementById('memberName').value = '';
+            document.getElementById('pendingMonth').value = '';
+            document.getElementById('pendingAmount').value = '200';
+            updatePendingList();
+            showSuccessMsg(`${name} marked as pending for ${month} (₹${amount.toLocaleString()})`);
+        }
+
+        function removePendingPayment(id) {
+            pendingPayments = pendingPayments.filter(p => p.id !== id);
+            saveDataToStorage();
+            updatePendingList();
+        }
+
+        function updateExpenseDate() {
+            const expenseType = document.getElementById('expenseType').value;
+            const expenseDate = document.getElementById('expenseDate').value;
+
+            if (!expenseType) {
+                alert('Please select expense type');
+                return;
+            }
+
+            if (!expenseDate) {
+                alert('Please select date');
+                return;
+            }
+
+            expenseDates[expenseType] = expenseDate;
+            saveDataToStorage();
+            updateExpenseDisplay();
+            
+            const expenseName = expenseType === 'barbeque' ? 'Barbeque' : 'Farewell Gift';
+            const displayDate = new Date(expenseDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
+            showSuccessMsg(`${expenseName} date updated to ${displayDate}`);
+            
+            document.getElementById('expenseType').value = '';
+            document.getElementById('expenseDate').value = '';
+        }
+
+        function updateExpenseDisplay() {
+            const barbequeDate = new Date(expenseDates.barbeque).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
+            const farewellDate = new Date(expenseDates.farewell).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
+            
+            // Update Barbeque date
+            const barbequeElement = document.getElementById('barbeque-date');
+            if (barbequeElement) {
+                barbequeElement.textContent = '📅 ' + barbequeDate;
+            }
+            
+            // Update Farewell Gift date
+            const farewellElement = document.getElementById('farewell-date');
+            if (farewellElement) {
+                farewellElement.textContent = '📅 ' + farewellDate;
+            }
+        }
+
+        function updatePendingList() {
+            const pendingList = document.getElementById('pendingList');
+            
+            if (pendingPayments.length === 0) {
+                pendingList.innerHTML = '<div class="empty-message">No pending payments yet! 👍</div>';
+                return;
+            }
+
+            // Calculate total pending amount
+            const totalPending = pendingPayments.reduce((sum, payment) => sum + payment.amount, 0);
+
+            // Create total section
+            let html = `
+                <div class="pending-total">
+                    <span class="pending-total-label">Total Pending Amount:</span>
+                    <span class="pending-total-amount">₹${totalPending.toLocaleString()}</span>
+                </div>
+            `;
+
+            // Add individual items
+            html += pendingPayments.map(payment => `
+                <div class="pending-item">
+                    <div class="pending-info">
+                        <div class="pending-name">${payment.name}</div>
+                        <div class="pending-month">${payment.month} 2026</div>
+                    </div>
+                    <div class="pending-amount">₹${payment.amount.toLocaleString()}</div>
+                </div>
+            `).join('');
+
+            pendingList.innerHTML = html;
+        }
+
+        function saveDataToStorage() {
+            localStorage.setItem('pendingPayments', JSON.stringify(pendingPayments));
+            localStorage.setItem('expenseDates', JSON.stringify(expenseDates));
+        }
+
+        function loadDataFromStorage() {
+            const storedPending = localStorage.getItem('pendingPayments');
+            const storedExpenses = localStorage.getItem('expenseDates');
+
+            if (storedPending) {
+                pendingPayments = JSON.parse(storedPending);
+            }
+
+            if (storedExpenses) {
+                expenseDates = JSON.parse(storedExpenses);
+            }
+        }
 
         // Render Chart
         const ctx = document.getElementById('expenseChart').getContext('2d');
@@ -390,6 +961,14 @@
                 }
             }
         });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('adminModal');
+            if (event.target == modal) {
+                closeAdminModal();
+            }
+        }
     </script>
 </body>
 </html>
