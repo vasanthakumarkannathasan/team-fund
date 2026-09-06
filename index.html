@@ -74,6 +74,28 @@
             margin-bottom: 30px;
         }
 
+        .balance-summary {
+            background: #e8f5e9;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .balance-summary .metric-label {
+            color: #2e7d32;
+            font-size: 1em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .balance-summary .metric-value {
+            color: #1b5e20;
+            font-size: 2.6em;
+            font-weight: 700;
+        }
+
         .metric {
             background: #f9f9f9;
             padding: 20px;
@@ -154,6 +176,12 @@
             font-size: 0.9em;
             border-top: 1px solid #eee;
             padding-top: 8px;
+        }
+
+        .monthly-expense-note {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
         }
 
         .smart-plan {
@@ -308,6 +336,54 @@
             text-align: center;
             font-style: italic;
             grid-column: 1 / -1;
+        }
+
+        .summary-note {
+            color: #666;
+            font-size: 0.9em;
+            margin: -18px 0 20px;
+        }
+
+        .ledger-table-wrap {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .ledger-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 560px;
+        }
+
+        .ledger-table th,
+        .ledger-table td {
+            padding: 12px 10px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+
+        .ledger-table th:first-child,
+        .ledger-table td:first-child {
+            text-align: left;
+        }
+
+        .ledger-table th {
+            color: #666;
+            font-size: 0.85em;
+            background: #f9f9f9;
+        }
+
+        .ledger-table td {
+            color: #333;
+        }
+
+        .ledger-table .balance-cell {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .admin-form small {
+            color: #666;
         }
 
 .feedback-section {
@@ -548,19 +624,9 @@
             <button class="admin-btn" onclick="openAdminModal()">🔧 Admin</button>
         </div>
 
-        <div class="metrics">
-            <div class="metric">
-                <div class="metric-label">Total Collected</div>
-                <div class="metric-value">₹19,001</div>
-            </div>
-            <div class="metric orange">
-                <div class="metric-label">Total Spent</div>
-                <div class="metric-value">₹12,783</div>
-            </div>
-            <div class="metric blue">
-                <div class="metric-label">Current Balance</div>
-                <div class="metric-value">₹6,218</div>
-            </div>
+        <div class="balance-summary">
+            <div class="metric-label">Current Balance</div>
+            <div class="metric-value" id="currentBalance">₹0</div>
         </div>
 
         <div class="chart-section">
@@ -569,30 +635,12 @@
         </div>
 
         <h2>Expense Details</h2>
-        <div class="details">
-            <div class="detail-item">
-                <div class="detail-label">Barbeque</div>
-                <div class="detail-value">₹9,283</div>
-                <div class="detail-percent">55.2% of total</div>
-                <div class="detail-date" id="barbeque-date" style="color: #FF9800; font-weight: bold; margin-top: 8px; font-size: 0.9em;">📅 July 01, 2026</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Farewell Gift</div>
-                <div class="detail-value">₹3,500</div>
-                <div class="detail-percent">20.8% of total</div>
-                <div class="detail-date" id="farewell-date" style="color: #9C27B0; font-weight: bold; margin-top: 8px; font-size: 0.9em;">📅 July 01, 2026</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Available Balance</div>
-                <div class="detail-value">₹6,218</div>
-                <div class="detail-percent">23.9% of total</div>
-            </div>
-        </div>
+        <div class="details" id="monthlyExpenseDetails"></div>
 
         <h2>Monthly Collection Plan</h2>
         <div class="smart-plan">
             <h3>💰 Ongoing Collection</h3>
-            <div class="plan-item"><strong>₹200 per member</strong> × 14 members = <strong>₹2,800 per month</strong></div>
+            <div class="plan-item"><strong>₹200 per member</strong> × 12 members = <strong>₹2,400 per month</strong></div>
             <div class="plan-item">Collection will happen every month to sustain team activities</div>
         </div>
 
@@ -600,19 +648,27 @@
         <div class="outing-timeline">
             <h3>🎉 When Will We Plan the Next Outing?</h3>
             <div class="timeline-item">Target Fund: <strong>₹30,000</strong></div>
-            <div class="timeline-item">Current Balance: <strong>₹6,218</strong></div>            
+            <div class="timeline-item">Current Balance: <strong id="outingBalance">₹0</strong></div>
             
             <div class="progress-bar">
-                <div class="progress-fill">40%</div>
+                <div class="progress-fill" id="outingProgress">0%</div>
             </div>
 
             <div class="timeline-item" style="margin-top: 15px;">
                 <strong>Expected Timeline:</strong>
             </div>
-            <div class="timeline-item">📅 <strong>July 2026:</strong> ₹4,018 (Current)</div>
-            <div class="timeline-item">📅 <strong>August 2026:</strong> ₹6,818 (Current + ₹2,800)</div>
-            <div class="timeline-item">📅 <strong>September 2026:</strong> ₹9,618 (Current + ₹5,600)</div>
-            <div class="timeline-item">📅 <strong>October 2026:</strong> ₹12,418 ✅ (Ready for next outing!)</div>
+            <div class="timeline-item" id="outingTimeline">Add monthly activity from Admin to update this plan.</div>
+        </div>
+
+        <h2>Monthly Fund Summary</h2>
+        <p class="summary-note">Opening balance before June: ₹14,801. Collection is ₹200 per person for 12 team members.</p>
+        <div class="ledger-table-wrap">
+            <table class="ledger-table">
+                <thead>
+                    <tr><th>Month</th><th>Collected</th><th>Spent</th><th>Balance</th></tr>
+                </thead>
+                <tbody id="ledgerBody"></tbody>
+            </table>
         </div>
 
         <!-- MODULE 1: PENDING PAYMENTS -->
@@ -657,40 +713,26 @@
 
                 <!-- Add Pending Payment -->
                 <div class="admin-section">
-                    <h3>⚠️ Add Pending Payment</h3>
+                    <h3>📊 Add Monthly Collection</h3>
                     <div class="admin-form">
-                        <input type="text" id="memberName" placeholder="Member Name (e.g., John)">
-                        <select id="pendingMonth" required>
+                        <select id="collectionMonth" required>
                             <option value="">Select Month</option>
-                            <option value="January">January 2026</option>
-                            <option value="February">February 2026</option>
-                            <option value="March">March 2026</option>
-                            <option value="April">April 2026</option>
-                            <option value="May">May 2026</option>
-                            <option value="June">June 2026</option>
-                            <option value="July">July 2026</option>
-                            <option value="August">August 2026</option>
-                            <option value="September">September 2026</option>
-                            <option value="October">October 2026</option>
-                            <option value="November">November 2026</option>
-                            <option value="December">December 2026</option>
+                            <option>June 2026</option><option>July 2026</option><option>August 2026</option><option>September 2026</option><option>October 2026</option><option>November 2026</option><option>December 2026</option>
                         </select>
-                        <input type="number" id="pendingAmount" placeholder="Amount (e.g., 200)" min="0" value="200">
-                        <button onclick="addPendingPayment()">Add Pending</button>
+                        <input type="number" id="collectionAmount" placeholder="Amount collected" min="0" value="2400">
+                        <small>Expected amount: ₹200 × 12 people = ₹2,400</small>
+                        <button type="button" onclick="addMonthlyCollection()">Save Collection</button>
                     </div>
                 </div>
 
                 <!-- Manage Expenses -->
                 <div class="admin-section">
-                    <h3>💰 Update Expense Dates</h3>
+                    <h3>💰 Add Monthly Spending</h3>
                     <div class="admin-form">
-                        <select id="expenseType" required>
-                            <option value="">Select Expense Type</option>
-                            <option value="barbeque">Barbeque</option>
-                            <option value="farewell">Farewell Gift</option>
-                        </select>
-                        <input type="date" id="expenseDate" required>
-                        <button onclick="updateExpenseDate()">Update Date</button>
+                        <select id="spendMonth" required><option value="">Select Month</option><option>June 2026</option><option>July 2026</option><option>August 2026</option><option>September 2026</option><option>October 2026</option><option>November 2026</option><option>December 2026</option></select>
+                        <input type="text" id="spendDescription" placeholder="Description (e.g., Team snacks)">
+                        <input type="number" id="spendAmount" placeholder="Amount spent" min="0">
+                        <button type="button" onclick="addMonthlySpending()">Save Spending</button>
                     </div>
                 </div>
 
@@ -723,9 +765,16 @@
         // Data storage
         let pendingPayments = [];
         let isLoggedIn = false;
+        const openingBalance = 14801;
+        let monthlyLedger = [
+            { month: 'June 2026', collected: 2000, spent: 12783, details: 'Sekaran Mall ₹9,283 + Anantha farewell gift ₹3,500' },
+            { month: 'July 2026', collected: 2200, spent: 0, details: '' },
+            { month: 'August 2026', collected: 2200, spent: 1200, details: 'Team snacks box' },
+            { month: 'September 2026', collected: 2200, spent: 700, details: 'Team snacks' }
+        ];
         let expenseDates = {
-            barbeque: '2026-07-01',
-            farewell: '2026-07-01'
+            barbeque: '2026-06-01',
+            farewell: '2026-06-01'
         };
 
         // Initialize
@@ -733,6 +782,7 @@
             loadDataFromStorage();
             updatePendingList();
             updateExpenseDisplay();
+            renderDashboard();
         };
 
         function openAdminModal() {
@@ -786,9 +836,11 @@
         }
 
         function clearForm() {
-            document.getElementById('memberName').value = '';
-            document.getElementById('pendingMonth').value = '';
-            document.getElementById('pendingAmount').value = '200';
+            document.getElementById('collectionMonth').value = '';
+            document.getElementById('collectionAmount').value = '2400';
+            document.getElementById('spendMonth').value = '';
+            document.getElementById('spendDescription').value = '';
+            document.getElementById('spendAmount').value = '';
             document.getElementById('successMsg').style.display = 'none';
         }
 
@@ -801,39 +853,47 @@
             }, 3000);
         }
 
-        function addPendingPayment() {
-            const name = document.getElementById('memberName').value.trim();
-            const month = document.getElementById('pendingMonth').value;
-            const amount = parseFloat(document.getElementById('pendingAmount').value);
+        function getLedgerEntry(month) {
+            let entry = monthlyLedger.find(item => item.month === month);
+            if (!entry) {
+                entry = { month, collected: 0, spent: 0, details: '' };
+                monthlyLedger.push(entry);
+            }
+            return entry;
+        }
 
-            if (!name) {
-                alert('Please enter member name');
+        function addMonthlyCollection() {
+            const month = document.getElementById('collectionMonth').value;
+            const amount = Number(document.getElementById('collectionAmount').value);
+            if (!month || amount < 0 || !Number.isFinite(amount)) {
+                alert('Please select a month and enter a valid collection amount');
                 return;
             }
-
-            if (!month) {
-                alert('Please select month');
-                return;
-            }
-
-            if (!amount || amount <= 0) {
-                alert('Please enter valid amount');
-                return;
-            }
-
-            pendingPayments.push({
-                id: Date.now(),
-                name: name,
-                month: month,
-                amount: amount
-            });
-
+            getLedgerEntry(month).collected = amount;
             saveDataToStorage();
-            document.getElementById('memberName').value = '';
-            document.getElementById('pendingMonth').value = '';
-            document.getElementById('pendingAmount').value = '200';
-            updatePendingList();
-            showSuccessMsg(`${name} marked as pending for ${month} (₹${amount.toLocaleString()})`);
+            renderDashboard();
+            showSuccessMsg(`${month} collection saved as ₹${amount.toLocaleString('en-IN')}`);
+            document.getElementById('collectionMonth').value = '';
+            document.getElementById('collectionAmount').value = '2400';
+        }
+
+        function addMonthlySpending() {
+            const month = document.getElementById('spendMonth').value;
+            const description = document.getElementById('spendDescription').value.trim();
+            const amount = Number(document.getElementById('spendAmount').value);
+            if (!month || !description || amount <= 0 || !Number.isFinite(amount)) {
+                alert('Please select a month, enter a description, and enter a valid spending amount');
+                return;
+            }
+            const entry = getLedgerEntry(month);
+            entry.spent += amount;
+            entry.details = entry.details ? `${entry.details}; ${description} ₹${amount.toLocaleString('en-IN')}` : `${description} ₹${amount.toLocaleString('en-IN')}`;
+            saveDataToStorage();
+            renderDashboard();
+            showSuccessMsg(`${month} spending saved as ₹${amount.toLocaleString('en-IN')}`);
+            document.getElementById('spendMonth').value = '';
+            document.getElementById('spendDescription').value = '';
+            document.getElementById('spendAmount').value = '';
         }
 
         function removePendingPayment(id) {
@@ -921,6 +981,7 @@
         function saveDataToStorage() {
             localStorage.setItem('pendingPayments', JSON.stringify(pendingPayments));
             localStorage.setItem('expenseDates', JSON.stringify(expenseDates));
+            localStorage.setItem('monthlyLedger', JSON.stringify(monthlyLedger));
         }
 
         function loadDataFromStorage() {
@@ -934,18 +995,59 @@
             if (storedExpenses) {
                 expenseDates = JSON.parse(storedExpenses);
             }
+
+            const storedLedger = localStorage.getItem('monthlyLedger');
+            if (storedLedger) {
+                monthlyLedger = JSON.parse(storedLedger);
+            }
+        }
+
+        function formatCurrency(amount) {
+            return `₹${Math.round(amount).toLocaleString('en-IN')}`;
+        }
+
+        function renderDashboard() {
+            const newCollections = monthlyLedger.reduce((total, item) => total + Number(item.collected || 0), 0);
+            const totalCollected = openingBalance + newCollections;
+            const totalSpent = monthlyLedger.reduce((total, item) => total + Number(item.spent || 0), 0);
+            const balance = totalCollected - totalSpent;
+            const sortedLedger = [...monthlyLedger].sort((a, b) => new Date(`1 ${a.month}`) - new Date(`1 ${b.month}`));
+            let runningBalance = openingBalance;
+
+            document.getElementById('currentBalance').textContent = formatCurrency(balance);
+            document.getElementById('outingBalance').textContent = formatCurrency(balance);
+            document.getElementById('outingProgress').style.width = `${Math.min(100, Math.round((balance / 30000) * 100))}%`;
+            document.getElementById('outingProgress').textContent = `${Math.min(100, Math.round((balance / 30000) * 100))}%`;
+
+            const timelineItems = sortedLedger.map(item => {
+                runningBalance += Number(item.collected || 0) - Number(item.spent || 0);
+                return { item, balance: runningBalance };
+            });
+            document.getElementById('ledgerBody').innerHTML = timelineItems.map(({ item, balance: monthBalance }) => `<tr><td><strong>${item.month}</strong><br><small>${item.details || 'No spending recorded'}</small></td><td>${formatCurrency(item.collected)}</td><td>${formatCurrency(item.spent)}</td><td class="balance-cell">${formatCurrency(monthBalance)}</td></tr>`).join('');
+
+            document.getElementById('monthlyExpenseDetails').innerHTML = sortedLedger.map(item => `<div class="detail-item"><div class="detail-label">${item.month}</div><div class="detail-value">${formatCurrency(item.spent)}</div><div class="monthly-expense-note">${item.details || 'No spending recorded'}</div></div>`).join('');
+            const timeline = timelineItems.map(({ item, balance: monthBalance }) => `<div class="timeline-item">📅 <strong>${item.month}:</strong> ${formatCurrency(monthBalance)}${item.spent ? ` after ${formatCurrency(item.spent)} spending` : ''}</div>`);
+            document.getElementById('outingTimeline').outerHTML = timeline.join('') || '<div class="timeline-item" id="outingTimeline">Add monthly activity from Admin to update this plan.</div>';
+
+            if (window.expenseChart) {
+                window.expenseChart.data.datasets[0].data = sortedLedger.map(item => Number(item.spent || 0));
+                window.expenseChart.data.datasets[0].details = sortedLedger.map(item => item.details || 'No spending recorded');
+                window.expenseChart.data.labels = sortedLedger.map(item => item.month);
+                window.expenseChart.update();
+            }
         }
 
         // Render Chart
         const ctx = document.getElementById('expenseChart').getContext('2d');
-        new Chart(ctx, {
+        window.expenseChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Barbeque', 'Farewell Gift', 'Balance'],
+                labels: ['June 2026', 'July 2026', 'August 2026', 'September 2026'],
                 datasets: [{
-                    data: [9283, 3500, 6218],
-                    backgroundColor: ['#FF9800', '#9C27B0', '#4CAF50'],
-                    borderColor: ['#FF9800', '#9C27B0', '#4CAF50'],
+                data: [12783, 0, 1200, 700],
+                    details: ['Sekaran Mall ₹9,283 + Anantha farewell gift ₹3,500', 'No spending recorded', 'Team snacks box', 'Team snacks'],
+                    backgroundColor: ['#FF9800', '#9C27B0', '#2196F3', '#4CAF50'],
+                    borderColor: ['#FF9800', '#9C27B0', '#2196F3', '#4CAF50'],
                     borderWidth: 1
                 }]
             },
@@ -955,6 +1057,15 @@
                 plugins: {
                     legend: {
                         position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const amount = formatCurrency(context.raw);
+                                const details = context.dataset.details[context.dataIndex];
+                                return [`Spent: ${amount}`, `Details: ${details}`];
+                            }
+                        }
                     }
                 }
             }
