@@ -135,6 +135,7 @@
 
         #expenseChart {
             max-width: 400px;
+            max-height: 360px;
             margin: 0 auto;
         }
 
@@ -1091,81 +1092,92 @@
 
         // Render Chart
         const ctx = document.getElementById('expenseChart').getContext('2d');
-        const doughnutLabelsPlugin = {
-            id: 'doughnutLabels',
-            afterDraw(chart) {
+        const barLabelsPlugin = {
+            id: 'barLabels',
+            afterDatasetsDraw(chart) {
                 const dataset = chart.data.datasets[0];
                 const values = dataset.data.map(value => Number(value) || 0);
                 const total = values.reduce((sum, value) => sum + value, 0);
                 const meta = chart.getDatasetMeta(0);
-                const chartArea = chart.chartArea;
-                const centerX = (chartArea.left + chartArea.right) / 2;
-                const centerY = (chartArea.top + chartArea.bottom) / 2;
                 const context = chart.ctx;
 
                 context.save();
-                meta.data.forEach((arc, index) => {
+                meta.data.forEach((bar, index) => {
                     const value = values[index];
-                    if (!value || !arc) return;
+                    if (!bar) return;
 
-                    const percentage = Math.round((value / total) * 100);
-                    const point = arc.getCenterPoint();
-                    const monthName = chart.data.labels[index].split(' ')[0];
-                    const displayMonth = monthName.slice(0, 3);
-                    context.fillStyle = '#ffffff';
+                    const percentage = total ? Math.round((value / total) * 100) : 0;
+                    const props = bar.getProps(['x', 'y', 'base'], true);
+                    const barHeight = Math.abs(props.base - props.y);
+                    const compactLabel = barHeight < 55;
+                    const labelY = compactLabel ? props.y - 22 : (props.y + props.base) / 2;
+                    context.fillStyle = compactLabel ? '#555555' : '#ffffff';
                     context.textAlign = 'center';
                     context.textBaseline = 'middle';
-                    context.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                    context.shadowColor = value ? 'rgba(0, 0, 0, 0.3)' : 'transparent';
                     context.shadowBlur = 3;
-                    context.font = '700 9px Arial';
-                    context.fillText(displayMonth, point.x, point.y - 9);
                     context.font = '700 14px Arial';
-                    context.fillText(`${percentage}%`, point.x, point.y + 8);
+                    context.fillText(`${percentage}%`, props.x, labelY);
                 });
-
-                context.shadowColor = 'transparent';
-                context.shadowBlur = 0;
-                context.fillStyle = '#555555';
-                context.font = '600 12px Arial';
-                context.textAlign = 'center';
-                context.fillText('TOTAL SPENT', centerX, centerY - 10);
-                context.fillStyle = '#222222';
-                context.font = '700 18px Arial';
-                context.fillText(formatCurrency(total), centerX, centerY + 14);
                 context.restore();
             }
         };
 
         window.expenseChart = new Chart(ctx, {
-            type: 'doughnut',
-            plugins: [doughnutLabelsPlugin],
+            type: 'bar',
+            plugins: [barLabelsPlugin],
             data: {
                 labels: ['June 2026', 'July 2026', 'August 2026', 'September 2026'],
                 datasets: [{
-                data: [12783, 0, 1200, 700],
+                    data: [12783, 0, 1200, 700],
                     details: ['Sekaran Mall ₹9,283 + Anantha farewell gift ₹3,500', 'No spending recorded', 'Team snacks box', 'Team snacks'],
                     backgroundColor: ['#FF9800', '#9C27B0', '#2196F3', '#4CAF50'],
-                    borderColor: ['#FF9800', '#9C27B0', '#2196F3', '#4CAF50'],
-                    borderWidth: 1
+                    borderRadius: 5,
+                    borderSkipped: false,
+                    maxBarThickness: 90
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
-                cutout: '64%',
                 layout: {
                     padding: 12
                 },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: value => formatCurrency(value)
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            callback: function(value, index) {
+                                return this.chart.data.labels[index].split(' ')[0].slice(0, 3);
+                            }
+                        }
+                    }
+                },
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        display: false
                     },
                     tooltip: {
+                        position: 'nearest',
+                        xAlign: 'center',
+                        yAlign: 'bottom',
+                        padding: 12,
+                        bodySpacing: 6,
+                        displayColors: false,
                         callbacks: {
                             label: function(context) {
                                 const amount = formatCurrency(context.raw);
                                 const details = context.dataset.details[context.dataIndex];
-                                return [`Spent: ${amount}`, `Details: ${details}`];
+                                const detailLines = details.match(/.{1,38}(?:\s|$)/g) || [details];
+                                return [`Spent: ${amount}`, 'Details:', ...detailLines.map(line => line.trim())];
                             }
                         }
                     }
