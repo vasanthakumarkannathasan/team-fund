@@ -134,8 +134,10 @@
         }
 
         #expenseChart {
-            max-width: 400px;
-            max-height: 360px;
+            display: block;
+            width: 100% !important;
+            max-width: 620px;
+            height: 360px !important;
             margin: 0 auto;
         }
 
@@ -646,6 +648,10 @@
                 grid-template-columns: 1fr;
             }
 
+            #expenseChart {
+                height: 300px !important;
+            }
+
             .admin-modal-content {
                 width: 95%;
                 margin: 20% auto;
@@ -1140,6 +1146,10 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
                 layout: {
                     padding: 12
                 },
@@ -1168,7 +1178,7 @@
                     tooltip: {
                         position: 'nearest',
                         xAlign: 'center',
-                        yAlign: 'bottom',
+                        yAlign: 'top',
                         padding: 12,
                         bodySpacing: 6,
                         displayColors: false,
