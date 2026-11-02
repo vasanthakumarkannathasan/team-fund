@@ -9,8 +9,7 @@
     <title>Team Fund Tracker</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -998,73 +997,806 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        :root {
+            --brand-orange: #f26522;
+            --brand-orange-light: #ff8a4c;
+            --ink: #2c3038;
+            --muted: #717882;
+            --line: #e8e8e8;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            padding: 0;
+            overflow-x: hidden;
+            background: #fff;
+            color: var(--ink);
+            font-family: 'DM Sans', 'Avenir Next', sans-serif;
+            user-select: text;
+        }
+
+        .site-header {
+            position: relative;
+            z-index: 2;
+            background: #121214;
+            color: #fff;
+        }
+
+        .topbar-inner {
+            position: relative;
+            display: flex;
+            width: min(1180px, calc(100% - 56px));
+            min-height: 76px;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0 auto;
+        }
+
+        .brand-lockup {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .brand-mark {
+            display: grid;
+            width: 36px;
+            height: 36px;
+            place-items: center;
+            border-radius: 3px;
+            background: var(--brand-orange);
+            color: #fff;
+            font-size: 0.8em;
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+
+        .brand-wordmark {
+            font-size: 1.15em;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .dashboard-nav {
+            position: absolute;
+            top: 100%;
+            right: max(calc((100vw - 1180px) / 2), 18px);
+            z-index: 3;
+            display: none;
+            width: min(280px, calc(100vw - 36px));
+            flex-direction: column;
+            gap: 0;
+            padding: 8px;
+            border-top: 2px solid var(--brand-orange);
+            background: #121214;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+        }
+
+        .dashboard-nav.open {
+            display: flex;
+        }
+
+        .dashboard-nav a {
+            padding: 13px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #dedee0;
+            font-size: 0.84em;
+            text-decoration: none;
+        }
+
+        .dashboard-nav a:last-child {
+            border-bottom: 0;
+        }
+
+        .dashboard-nav a:hover {
+            color: #fff;
+        }
+
+        .admin-btn,
+        .login-form button,
+        .admin-form button {
+            border-radius: 3px;
+            background: var(--brand-orange);
+            color: #fff;
+        }
+
+        .admin-btn {
+            padding: 11px 17px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .menu-toggle {
+            display: flex;
+            width: 40px;
+            height: 40px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: 0;
+            border-radius: 3px;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            border-radius: 2px;
+            background: #fff;
+            transition: transform 160ms ease;
+        }
+
+        .menu-toggle[aria-expanded="true"] span:first-child {
+            transform: translateY(4px) rotate(45deg);
+        }
+
+        .menu-toggle[aria-expanded="true"] span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle[aria-expanded="true"] span:last-child {
+            transform: translateY(-12px) rotate(-45deg);
+        }
+
+        .admin-btn:hover,
+        .login-form button:hover,
+        .admin-form button:hover {
+            background: #de5718;
+        }
+
+        .hero {
+            position: relative;
+            display: flex;
+            min-height: 440px;
+            align-items: center;
+            overflow: hidden;
+            isolation: isolate;
+            background: #1c100c;
+            color: #fff;
+        }
+
+        .hero::after {
+            position: absolute;
+            z-index: 1;
+            inset: 0;
+            background: linear-gradient(90deg, #1c100c 0%, rgba(28, 16, 12, 0.92) 42%, rgba(28, 16, 12, 0.32) 100%);
+            content: '';
+            pointer-events: none;
+        }
+
+        .hero-motion {
+            position: absolute;
+            z-index: 0;
+            inset: 0 0 0 42%;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            overflow: hidden;
+            opacity: 0.86;
+            pointer-events: none;
+        }
+
+        .hero-motion-column {
+            flex: 0 0 clamp(170px, 22vw, 270px);
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .hero-tile-track {
+            display: flex;
+            flex-direction: column;
+            animation: hero-tile-loop 46s linear infinite;
+        }
+
+        .hero-motion-column:nth-child(2) .hero-tile-track {
+            animation-duration: 58s;
+            animation-direction: reverse;
+        }
+
+        .hero-motion-column:nth-child(3) .hero-tile-track {
+            animation-duration: 52s;
+        }
+
+        .hero-tile-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 0 0 auto;
+            padding-bottom: 12px;
+        }
+
+        .hero-tile {
+            height: 220px;
+            flex: 0 0 220px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 4px;
+            background-color: #492c21;
+            background-position: center;
+            background-size: cover;
+        }
+
+        @keyframes hero-tile-loop {
+            to {
+                transform: translateY(-50%);
+            }
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 2;
+            width: min(1120px, calc(100% - 56px));
+            margin: 0 auto;
+            padding: 42px 0;
+        }
+
+        .hero-eyebrow {
+            color: var(--brand-orange-light);
+            font-size: 0.76em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            max-width: 680px;
+            margin: 17px 0 15px;
+            color: #fff;
+            font-size: clamp(38px, 5vw, 66px);
+            font-weight: 800;
+            line-height: 1.04;
+        }
+
+        .hero h1 em {
+            color: #f47735;
+            font-style: normal;
+        }
+
+        .hero-copy {
+            margin-bottom: 26px;
+            color: #f0f0f0;
+            font-size: 1em;
+        }
+
+        .hero-stats {
+            display: flex;
+            align-items: end;
+            gap: 34px;
+        }
+
+        .hero-balance {
+            font-size: 2.4em;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .hero-balance-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ddd;
+            font-size: 0.31em;
+            font-weight: 700;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+        }
+
+        .hero-goal {
+            width: min(440px, 45vw);
+        }
+
+        .hero-goal-heading,
+        .hero-goal-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 0.78em;
+        }
+
+        .hero-goal-heading {
+            margin-bottom: 9px;
+        }
+
+        .hero-goal-footer {
+            margin-top: 8px;
+            color: #eee;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 9px;
+            overflow: hidden;
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: inherit;
+            background: #f47735;
+            transition: width 300ms ease;
+        }
+
+        .container {
+            width: min(1120px, calc(100% - 56px));
+            max-width: none;
+            margin: 0 auto;
+            padding: 48px 0 64px;
+            background: #fff;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            color: var(--ink);
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .section-total {
+            color: var(--muted);
+            font-size: 0.8em;
+        }
+
+        .spending-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .motion-toggle {
+            display: grid;
+            width: 36px;
+            height: 36px;
+            place-items: center;
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            background: #fff;
+            color: var(--ink);
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .motion-toggle:hover {
+            border-color: var(--brand-orange);
+            color: var(--brand-orange);
+        }
+
+        .months {
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .months-track {
+            display: flex;
+            width: max-content;
+            animation: monthly-card-scroll var(--scroll-duration, 42s) linear infinite;
+            will-change: transform;
+        }
+
+        .months-track.is-paused,
+        .months:hover .months-track,
+        .months:focus-within .months-track {
+            animation-play-state: paused;
+        }
+
+        .months-group {
+            display: flex;
+            flex: 0 0 auto;
+            gap: 18px;
+            padding-right: 18px;
+        }
+
+        .month-card {
+            position: relative;
+            display: flex;
+            width: clamp(240px, 24vw, 290px);
+            height: 340px;
+            flex: 0 0 auto;
+            flex-direction: column;
+            justify-content: flex-end;
+            overflow: hidden;
+            padding: 22px;
+            border: 1px solid rgba(30, 25, 24, 0.16);
+            border-radius: 5px;
+            background-color: #38281f;
+            background-image: linear-gradient(180deg, rgba(12, 12, 14, 0.04) 20%, rgba(12, 12, 14, 0.84) 100%), var(--month-image);
+            background-position: center;
+            background-size: cover;
+            color: #fff;
+        }
+
+        .month-label {
+            margin-bottom: 8px;
+            color: #ffd1b6;
+            font-size: 0.74em;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+
+        .month-amount {
+            margin-bottom: 6px;
+            color: #fff;
+            font-size: 1.65em;
+            font-weight: 700;
+        }
+
+        .month-note {
+            min-height: 38px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.8em;
+            line-height: 1.5;
+        }
+
+        .month-track {
+            height: 4px;
+            margin-top: 14px;
+            overflow: hidden;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.32);
+        }
+
+        .month-fill {
+            height: 100%;
+            border-radius: inherit;
+            background: #ff7b32;
+        }
+
+        .month-share {
+            margin-top: 7px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.7em;
+        }
+
+        @keyframes monthly-card-scroll {
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+        .container > h2 {
+            margin: 38px 0 16px;
+            padding: 0;
+            border: 0;
+            color: var(--ink);
+            font-size: 1.25em;
+            font-weight: 600;
+        }
+
+        .smart-plan {
+            padding: 18px 0;
+            border: 0;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            border-radius: 0;
+            background: #fff;
+        }
+
+        .smart-plan h3 {
+            color: var(--brand-orange);
+        }
+
+        .plan-item strong {
+            color: var(--ink);
+        }
+
+        .summary-note {
+            margin: -4px 0 16px;
+            color: var(--muted);
+        }
+
+        .ledger-table-wrap {
+            overflow-x: auto;
+        }
+
+        .ledger-table th {
+            background: #f7f7f7;
+            color: #646a72;
+        }
+
+        .ledger-table th,
+        .ledger-table td {
+            border-bottom-color: var(--line);
+        }
+
+        .ledger-table .balance-cell {
+            color: #27765b;
+        }
+
+        .pending-section,
+        .feedback-section {
+            padding: 20px;
+            border: 1px solid var(--line);
+            border-radius: 5px;
+            background: #fff;
+        }
+
+        .pending-section h3,
+        .feedback-section h3,
+        .admin-section h3 {
+            color: var(--ink);
+        }
+
+        .pending-item {
+            border: 1px solid var(--line);
+            border-radius: 5px;
+        }
+
+        .feedback-item:before {
+            color: var(--brand-orange);
+        }
+
+        .admin-modal-content {
+            border-radius: 5px;
+        }
+
+        .admin-form input:focus,
+        .admin-form select:focus,
+        .login-form input:focus {
+            outline: 2px solid rgba(242, 101, 34, 0.25);
+            border-color: var(--brand-orange);
+        }
+
+        button,
+        a,
+        input,
+        select {
+            font-family: inherit;
+        }
+
+        @media (max-width: 760px) {
+            .topbar-inner {
+                width: calc(100% - 36px);
+                min-height: 66px;
+            }
+
+            .brand-mark {
+                width: 32px;
+                height: 32px;
+            }
+
+            .brand-wordmark {
+                font-size: 0.95em;
+            }
+
+            .hero {
+                min-height: 470px;
+            }
+
+            .hero-motion {
+                left: 30%;
+                gap: 8px;
+                opacity: 0.6;
+            }
+
+            .hero-motion-column {
+                flex-basis: 48vw;
+            }
+
+            .hero-tile {
+                height: 190px;
+                flex-basis: 190px;
+            }
+
+            .hero::after {
+                background: linear-gradient(90deg, rgba(28, 16, 12, 0.98) 0%, rgba(28, 16, 12, 0.82) 62%, rgba(28, 16, 12, 0.45) 100%);
+            }
+
+            .hero-inner,
+            .container {
+                width: calc(100% - 36px);
+            }
+
+            .hero h1 {
+                font-size: clamp(38px, 11vw, 52px);
+            }
+
+            .hero-stats {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .hero-balance {
+                font-size: 2.1em;
+            }
+
+            .hero-goal {
+                width: min(440px, 100%);
+            }
+
+            .container {
+                padding: 36px 0 48px;
+            }
+
+            .section-heading {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .spending-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .month-card {
+                width: 260px;
+                height: 330px;
+            }
+
+            .section-total {
+                font-size: 0.76em;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-tile-track {
+                animation: none;
+            }
+
+            .hero-tile-group[aria-hidden="true"] {
+                display: none;
+            }
+
+            .months {
+                overflow-x: auto;
+                scrollbar-width: thin;
+            }
+
+            .months-track {
+                width: max-content;
+                animation: none;
+                will-change: auto;
+            }
+
+            .months-group[aria-hidden="true"] {
+                display: none;
+            }
+
+            .motion-toggle {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header-section">
-            <div class="brand-lockup">
+    <header class="site-header">
+        <div class="topbar-inner">
+            <a class="brand-lockup" href="#overview" aria-label="Team Fund home">
                 <span class="brand-mark" aria-hidden="true">TF</span>
-                <div>
-                    <h1>Team Fund</h1>
-                    <p class="brand-caption">Contributions, at a glance</p>
+                <span class="brand-wordmark">TEAM-FUND</span>
+            </a>
+            <nav class="dashboard-nav" id="dashboardNav" aria-label="Dashboard sections">
+                <a href="#overview">Overview</a>
+                <a href="#spending">Monthly activity</a>
+                <a href="#outing">Outing goal</a>
+            </nav>
+            <div class="header-actions">
+                <button class="admin-btn" onclick="openAdminModal()">Admin</button>
+                <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open dashboard menu" aria-controls="dashboardNav" aria-expanded="false" onclick="toggleDashboardNav()">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero" id="overview">
+        <div class="hero-motion" aria-hidden="true">
+            <div class="hero-motion-column">
+                <div class="hero-tile-track">
+                    <div class="hero-tile-group">
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                    </div>
+                    <div class="hero-tile-group" aria-hidden="true">
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                    </div>
                 </div>
             </div>
-            <button class="admin-btn" onclick="openAdminModal()">Admin</button>
+            <div class="hero-motion-column">
+                <div class="hero-tile-track">
+                    <div class="hero-tile-group">
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                    </div>
+                    <div class="hero-tile-group" aria-hidden="true">
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-motion-column">
+                <div class="hero-tile-track">
+                    <div class="hero-tile-group">
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                    </div>
+                    <div class="hero-tile-group" aria-hidden="true">
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                        <div class="hero-tile" style="background-image: url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&amp;fit=crop&amp;w=800&amp;q=80')"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <nav class="dashboard-nav" aria-label="Dashboard sections">
-            <a href="#overview">Overview</a>
-            <a href="#spending">Spending</a>
-            <a href="#outing">Outing goal</a>
-            <a href="#ledger">Monthly ledger</a>
-        </nav>
-
-        <div class="balance-summary" id="overview">
-            <div class="metric-label">Current Balance</div>
-            <div class="metric-value" id="currentBalance">₹0</div>
+        <div class="hero-inner">
+            <div class="hero-eyebrow">Our team, our fund</div>
+            <h1>Small contributions.<br><em>Big moments together.</em></h1>
+            <p class="hero-copy">Building toward the next team outing, one month at a time.</p>
+            <div class="hero-stats">
+                <div class="hero-balance">
+                    <span class="hero-balance-label">Available balance</span>
+                    <span id="currentBalance">₹0</span>
+                </div>
+                <div class="hero-goal" id="outing">
+                    <div class="hero-goal-heading">
+                        <span>Outing goal · ₹20,000</span>
+                        <strong id="outingProgressText">0%</strong>
+                    </div>
+                    <div class="progress-bar" role="progressbar" aria-label="Outing goal progress" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-fill" id="outingProgress"></div>
+                    </div>
+                    <div class="hero-goal-footer">
+                        <span id="outingRemaining">₹0 still needed</span>
+                        <span id="outingStatus">Keep collecting</span>
+                    </div>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div class="chart-section" id="spending">
-            <h2>Spending Breakdown</h2>
-            <canvas id="expenseChart"></canvas>
-        </div>
-
-        <h2>Expense Details</h2>
-        <div class="details" id="monthlyExpenseDetails"></div>
+    <main class="container">
+        <section id="spending" aria-labelledby="spendingTitle">
+            <div class="section-heading">
+                <h2 id="spendingTitle">Monthly spending</h2>
+                <div class="spending-actions">
+                    <span class="section-total">Total spent · <strong id="totalSpent">₹0</strong></span>
+                    <button class="motion-toggle" id="motionToggle" type="button" title="Pause monthly card animation" aria-label="Pause monthly card animation" aria-pressed="false" onclick="toggleSpendingMotion()">⏸</button>
+                </div>
+            </div>
+            <div class="months" id="monthlyExpenseDetails" tabindex="0" aria-label="Monthly spending cards, scrolling automatically">
+                <div class="months-track" id="monthlySpendingTrack"></div>
+            </div>
+        </section>
 
         <h2>Monthly Collection Plan</h2>
         <div class="smart-plan">
-            <h3>💰 Ongoing Collection</h3>
+            <h3>Ongoing collection</h3>
             <div class="plan-item"><strong>₹200 per member</strong> × 13 members = <strong>₹2,600 collected in November</strong></div>
             <div class="plan-item">Monthly contributions support team activities</div>
-        </div>
-
-        <h2>Next Team Outing Planning</h2>
-        <div class="outing-timeline" id="outing">
-            <h3>🎉 When Will We Plan the Next Outing?</h3>
-            <div class="timeline-item">Our outing goal: <strong>₹20,000</strong></div>
-            <div class="timeline-item">Current Balance: <strong id="outingBalance">₹0</strong></div>
-            
-            <div class="progress-bar">
-                <div class="progress-fill" id="outingProgress">0%</div>
-            </div>
-
-            <div class="outing-insights">
-                <div class="outing-insight">
-                    <div class="outing-insight-label">Goal Progress</div>
-                    <div class="outing-insight-value" id="outingProgressText">0%</div>
-                </div>
-                <div class="outing-insight">
-                    <div class="outing-insight-label">Still Needed</div>
-                    <div class="outing-insight-value" id="outingRemaining">₹0</div>
-                </div>
-                <div class="outing-insight">
-                    <div class="outing-insight-label">Next Milestone</div>
-                    <div class="outing-insight-value">₹10,000</div>
-                </div>
-            </div>
-            <div class="outing-status" id="outingStatus">Keep collecting to reach the outing goal.</div>
         </div>
 
         <h2 id="ledger">Monthly Fund Summary</h2>
@@ -1098,7 +1830,7 @@
                 <div class="feedback-item">Please share your thoughts via email or in person</div>
             </div>
         </div>
-    </div>
+    </main>
 
     <!-- ADMIN MODAL -->
     <div id="adminModal" class="admin-modal">
@@ -1199,6 +1931,21 @@
             document.getElementById('adminModal').classList.add('active');
             isLoggedIn = false;
             showLoginSection();
+        }
+
+        function toggleDashboardNav() {
+            const menu = document.getElementById('dashboardNav');
+            const toggle = document.getElementById('menuToggle');
+            const expanded = toggle.getAttribute('aria-expanded') === 'true';
+            menu.classList.toggle('open', !expanded);
+            toggle.setAttribute('aria-expanded', String(!expanded));
+            toggle.setAttribute('aria-label', expanded ? 'Open dashboard menu' : 'Close dashboard menu');
+        }
+
+        function closeDashboardNav() {
+            document.getElementById('dashboardNav').classList.remove('open');
+            document.getElementById('menuToggle').setAttribute('aria-expanded', 'false');
+            document.getElementById('menuToggle').setAttribute('aria-label', 'Open dashboard menu');
         }
 
         function closeAdminModal() {
@@ -1427,6 +2174,29 @@
             return `₹${Math.round(amount).toLocaleString('en-IN')}`;
         }
 
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[character]);
+        }
+
+        let spendingMotionPaused = false;
+
+        function toggleSpendingMotion() {
+            const track = document.getElementById('monthlySpendingTrack');
+            const toggle = document.getElementById('motionToggle');
+            spendingMotionPaused = !spendingMotionPaused;
+            track.classList.toggle('is-paused', spendingMotionPaused);
+            toggle.setAttribute('aria-pressed', String(spendingMotionPaused));
+            toggle.setAttribute('aria-label', spendingMotionPaused ? 'Play monthly card animation' : 'Pause monthly card animation');
+            toggle.title = spendingMotionPaused ? 'Play monthly card animation' : 'Pause monthly card animation';
+            toggle.textContent = spendingMotionPaused ? '▶' : '⏸';
+        }
+
         function renderDashboard() {
             const newCollections = monthlyLedger.reduce((total, item) => total + Number(item.collected || 0), 0);
             const totalCollected = openingBalance + newCollections;
@@ -1436,140 +2206,69 @@
             let runningBalance = openingBalance;
 
             document.getElementById('currentBalance').textContent = formatCurrency(balance);
-            document.getElementById('outingBalance').textContent = formatCurrency(balance);
+            document.getElementById('totalSpent').textContent = formatCurrency(totalSpent);
+
             const outingGoal = 20000;
             const outingPercentage = Math.min(100, Math.round((balance / outingGoal) * 100));
             const outingRemaining = Math.max(0, outingGoal - balance);
-            document.getElementById('outingProgress').style.width = `${outingPercentage}%`;
-            document.getElementById('outingProgress').textContent = `${outingPercentage}%`;
+            const outingProgress = document.getElementById('outingProgress');
+            outingProgress.style.width = `${outingPercentage}%`;
+            outingProgress.parentElement.setAttribute('aria-valuenow', outingPercentage);
             document.getElementById('outingProgressText').textContent = `${outingPercentage}%`;
-            document.getElementById('outingRemaining').textContent = formatCurrency(outingRemaining);
+            document.getElementById('outingRemaining').textContent = `${formatCurrency(outingRemaining)} still needed`;
             document.getElementById('outingStatus').textContent = balance >= outingGoal
-                ? '🎉 Goal reached. The team is ready to plan the next outing!'
-                : `${formatCurrency(outingRemaining)} more to go. Keep the monthly collection moving!`;
+                ? 'Goal reached'
+                : 'Keep collecting';
 
             const timelineItems = sortedLedger.map(item => {
                 runningBalance += Number(item.collected || 0) - Number(item.spent || 0);
                 return { item, balance: runningBalance };
             });
-            document.getElementById('ledgerBody').innerHTML = timelineItems.map(({ item, balance: monthBalance }) => `<tr><td><strong>${item.month}</strong><br><small>${item.details || 'No spending recorded'}</small></td><td>${formatCurrency(item.collected)}</td><td>${formatCurrency(item.spent)}</td><td class="balance-cell">${formatCurrency(monthBalance)}</td></tr>`).join('');
 
-            document.getElementById('monthlyExpenseDetails').innerHTML = sortedLedger.map(item => `<div class="detail-item"><div class="detail-label">${item.month}</div><div class="detail-value">${formatCurrency(item.spent)}</div><div class="monthly-expense-note">${item.details || 'No spending recorded'}</div></div>`).join('');
+            document.getElementById('ledgerBody').innerHTML = timelineItems.map(({ item, balance: monthBalance }) => `<tr><td><strong>${escapeHtml(item.month)}</strong><br><small>${escapeHtml(item.details || 'No spending recorded')}</small></td><td>${formatCurrency(item.collected)}</td><td>${formatCurrency(item.spent)}</td><td class="balance-cell">${formatCurrency(monthBalance)}</td></tr>`).join('');
 
-            if (window.expenseChart) {
-                window.expenseChart.data.datasets[0].data = sortedLedger.map(item => Number(item.spent || 0));
-                window.expenseChart.data.datasets[0].details = sortedLedger.map(item => item.details || 'No spending recorded');
-                window.expenseChart.data.labels = sortedLedger.map(item => item.month);
-                window.expenseChart.update();
-            }
+            const monthImages = {
+                'June 2026': 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
+                'July 2026': 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80',
+                'August 2026': 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80',
+                'September 2026': 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80',
+                'October 2026': 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80',
+                'November 2026': 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80'
+            };
+
+            const cards = sortedLedger.map(item => {
+                const spent = Number(item.spent || 0);
+                const percentage = totalSpent ? Math.round((spent / totalSpent) * 100) : 0;
+                const details = item.details
+                    ? escapeHtml(item.details)
+                    : Number(item.collected || 0) > 0
+                        ? `${formatCurrency(item.collected)} collected · No spending recorded`
+                        : 'No spending recorded';
+                const image = monthImages[item.month] || monthImages['July 2026'];
+                return `<article class="month-card" style="--month-image: url('${escapeHtml(image)}')"><div class="month-label">${escapeHtml(item.month)}</div><div class="month-amount">${formatCurrency(spent)}</div><div class="month-note">${details}</div><div class="month-track" aria-hidden="true"><div class="month-fill" style="width: ${percentage}%"></div></div><div class="month-share">${percentage}% of spending</div></article>`;
+            }).join('');
+            const group = `<div class="months-group">${cards}</div>`;
+            const track = document.getElementById('monthlySpendingTrack');
+            track.innerHTML = `${group}<div class="months-group" aria-hidden="true">${cards}</div>`;
+            track.style.setProperty('--scroll-duration', `${Math.max(30, sortedLedger.length * 7)}s`);
+            track.classList.toggle('is-paused', spendingMotionPaused);
         }
 
-        // Render Chart
-        const ctx = document.getElementById('expenseChart').getContext('2d');
-        const barLabelsPlugin = {
-            id: 'barLabels',
-            afterDatasetsDraw(chart) {
-                const dataset = chart.data.datasets[0];
-                const values = dataset.data.map(value => Number(value) || 0);
-                const total = values.reduce((sum, value) => sum + value, 0);
-                const meta = chart.getDatasetMeta(0);
-                const context = chart.ctx;
-
-                context.save();
-                meta.data.forEach((bar, index) => {
-                    const value = values[index];
-                    if (!bar) return;
-
-                    const percentage = total ? Math.round((value / total) * 100) : 0;
-                    const props = bar.getProps(['x', 'y', 'base'], true);
-                    const barHeight = Math.abs(props.base - props.y);
-                    const compactLabel = barHeight < 55;
-                    const labelY = compactLabel ? props.y - 22 : (props.y + props.base) / 2;
-                    context.fillStyle = compactLabel ? '#555555' : '#ffffff';
-                    context.textAlign = 'center';
-                    context.textBaseline = 'middle';
-                    context.shadowColor = value ? 'rgba(0, 0, 0, 0.3)' : 'transparent';
-                    context.shadowBlur = 3;
-                    context.font = '700 14px Arial';
-                    context.fillText(`${percentage}%`, props.x, labelY);
-                });
-                context.restore();
+        window.onclick = function(event) {
+            const modal = document.getElementById('adminModal');
+            const menu = document.getElementById('dashboardNav');
+            const toggle = document.getElementById('menuToggle');
+            if (menu.classList.contains('open') && !menu.contains(event.target) && !toggle.contains(event.target)) {
+                closeDashboardNav();
+            }
+            if (event.target === modal) {
+                closeAdminModal();
             }
         };
 
-        window.expenseChart = new Chart(ctx, {
-            type: 'bar',
-            plugins: [barLabelsPlugin],
-            data: {
-                labels: ['June 2026', 'July 2026', 'August 2026', 'September 2026'],
-                datasets: [{
-                    data: [12783, 0, 1200, 700],
-                    details: ['Sekaran Mall ₹9,283 + Anantha farewell gift ₹3,500', 'No spending recorded', 'Team snacks box', 'Team snacks'],
-                    backgroundColor: ['#FF9800', '#9C27B0', '#2196F3', '#4CAF50'],
-                    borderRadius: 5,
-                    borderSkipped: false,
-                    maxBarThickness: 90
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
-                },
-                layout: {
-                    padding: 12
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: value => formatCurrency(value)
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            callback: function(value, index) {
-                                return this.chart.data.labels[index].split(' ')[0].slice(0, 3);
-                            }
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        position: 'nearest',
-                        xAlign: 'center',
-                        yAlign: 'top',
-                        padding: 12,
-                        bodySpacing: 6,
-                        displayColors: false,
-                        callbacks: {
-                            label: function(context) {
-                                const amount = formatCurrency(context.raw);
-                                const details = context.dataset.details[context.dataIndex];
-                                const detailLines = details.match(/.{1,38}(?:\s|$)/g) || [details];
-                                return [`Spent: ${amount}`, 'Details:', ...detailLines.map(line => line.trim())];
-                            }
-                        }
-                    }
-                }
-            }
+        document.querySelectorAll('#dashboardNav a').forEach(link => {
+            link.addEventListener('click', closeDashboardNav);
         });
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('adminModal');
-            if (event.target == modal) {
-                closeAdminModal();
-            }
-        }
     </script>
 </body>
 </html>
