@@ -7,6 +7,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#ffffff">
     <title>Team Fund Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         * {
@@ -657,21 +660,372 @@
                 margin: 20% auto;
             }
         }
+
+        :root {
+            --brand-blue: #387ed1;
+            --brand-blue-dark: #2b67b1;
+            --ink: #303b48;
+            --muted: #7b8794;
+            --line: #e8edf2;
+            --surface: #f7f9fb;
+        }
+
+        body {
+            padding: 0;
+            background: #ffffff;
+            color: var(--ink);
+            font-family: 'DM Sans', 'Avenir Next', sans-serif;
+        }
+
+        .container {
+            max-width: 1120px;
+            padding: 0 36px 64px;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+            user-select: text;
+        }
+
+        .header-section {
+            min-height: 82px;
+            margin: 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .brand-lockup {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-mark {
+            display: grid;
+            width: 40px;
+            height: 40px;
+            place-items: center;
+            border-radius: 5px;
+            background: var(--brand-blue);
+            color: #fff;
+            font-size: 0.9em;
+            font-weight: 700;
+        }
+
+        .header-section h1 {
+            color: var(--ink);
+            font-size: 1.25em;
+            font-weight: 600;
+        }
+
+        .brand-caption {
+            margin-top: 2px;
+            color: var(--muted);
+            font-size: 0.78em;
+        }
+
+        .admin-btn,
+        .login-form button,
+        .admin-form button {
+            background: var(--brand-blue);
+            border-radius: 4px;
+        }
+
+        .admin-btn:hover,
+        .login-form button:hover,
+        .admin-form button:hover {
+            background: var(--brand-blue-dark);
+        }
+
+        .admin-btn {
+            padding: 10px 16px;
+        }
+
+        .dashboard-nav {
+            display: flex;
+            gap: 28px;
+            min-height: 50px;
+            align-items: center;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .dashboard-nav a {
+            color: #697684;
+            font-size: 0.88em;
+            text-decoration: none;
+        }
+
+        .dashboard-nav a:hover {
+            color: var(--brand-blue);
+        }
+
+        .balance-summary {
+            margin: 0;
+            padding: 44px 0 36px;
+            border: 0;
+            border-bottom: 1px solid var(--line);
+            border-radius: 0;
+            background: #fff;
+            text-align: left;
+        }
+
+        .balance-summary .metric-label {
+            margin-bottom: 6px;
+            color: var(--muted);
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .balance-summary .metric-value {
+            color: var(--ink);
+            font-size: 3em;
+            font-weight: 600;
+            line-height: 1.15;
+        }
+
+        h2 {
+            margin: 36px 0 16px;
+            padding: 0;
+            border: 0;
+            color: var(--ink);
+            font-size: 1.25em;
+            font-weight: 600;
+        }
+
+        .chart-section {
+            margin: 0;
+            padding: 4px 0 30px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+        }
+
+        .chart-section h2 {
+            margin-top: 28px;
+        }
+
+        #expenseChart {
+            max-width: 760px;
+            height: 340px !important;
+        }
+
+        .details {
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 12px;
+        }
+
+        .detail-item {
+            min-width: 0;
+            padding: 18px;
+            border: 1px solid var(--line);
+            border-radius: 5px;
+            background: #fff;
+        }
+
+        .detail-label {
+            color: var(--muted);
+        }
+
+        .detail-value {
+            color: var(--ink);
+            font-size: 1.35em;
+            font-weight: 600;
+        }
+
+        .monthly-expense-note {
+            line-height: 1.5;
+        }
+
+        .smart-plan {
+            margin-bottom: 0;
+            padding: 18px 0;
+            border: 0;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            border-radius: 0;
+            background: #fff;
+        }
+
+        .smart-plan h3 {
+            color: var(--brand-blue-dark);
+        }
+
+        .plan-item strong {
+            color: var(--ink);
+        }
+
+        .outing-timeline {
+            padding: 24px;
+            border: 1px solid #e2ebf5;
+            border-radius: 6px;
+            background: #f7faff;
+        }
+
+        .outing-timeline h3,
+        .outing-insight-label,
+        .outing-insight-value,
+        .outing-status {
+            color: var(--ink);
+        }
+
+        .outing-insight {
+            border: 1px solid #e7edf4;
+            background: #fff;
+        }
+
+        .progress-bar {
+            height: 12px;
+            border-radius: 6px;
+            background: #e5ebf1;
+        }
+
+        .progress-fill {
+            border-radius: 6px;
+            background: var(--brand-blue);
+        }
+
+        .summary-note {
+            margin: -4px 0 16px;
+            color: var(--muted);
+        }
+
+        .ledger-table th {
+            color: #647282;
+            background: var(--surface);
+            font-weight: 600;
+        }
+
+        .ledger-table th,
+        .ledger-table td {
+            border-bottom-color: var(--line);
+        }
+
+        .ledger-table td {
+            padding-top: 14px;
+            padding-bottom: 14px;
+        }
+
+        .ledger-table .balance-cell {
+            color: #27765b;
+        }
+
+        .pending-section,
+        .feedback-section {
+            padding: 20px;
+            border: 1px solid var(--line);
+            border-radius: 5px;
+            background: #fff;
+        }
+
+        .pending-section h3,
+        .feedback-section h3,
+        .admin-section h3 {
+            color: var(--ink);
+        }
+
+        .pending-item {
+            border: 1px solid var(--line);
+            border-radius: 5px;
+        }
+
+        .feedback-item:before {
+            color: var(--brand-blue);
+        }
+
+        .admin-modal-content {
+            border-radius: 6px;
+        }
+
+        .admin-form input:focus,
+        .admin-form select:focus,
+        .login-form input:focus {
+            outline: 2px solid rgba(56, 126, 209, 0.25);
+            border-color: var(--brand-blue);
+        }
+
+        button,
+        a,
+        input,
+        select {
+            font-family: inherit;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 0 18px 40px;
+            }
+
+            .header-section {
+                min-height: 72px;
+                flex-direction: row;
+                gap: 10px;
+            }
+
+            .brand-mark {
+                width: 34px;
+                height: 34px;
+            }
+
+            .header-section h1 {
+                font-size: 1.05em;
+            }
+
+            .brand-caption {
+                font-size: 0.7em;
+            }
+
+            .admin-btn {
+                padding: 9px 12px;
+                font-size: 0.85em;
+            }
+
+            .dashboard-nav {
+                gap: 22px;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .balance-summary {
+                padding: 34px 0 28px;
+            }
+
+            .balance-summary .metric-value {
+                font-size: 2.4em;
+            }
+
+            #expenseChart {
+                height: 300px !important;
+            }
+
+            .outing-insights {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-section">
-            <h1>Team Fund Tracker</h1>
-            <button class="admin-btn" onclick="openAdminModal()">🔧 Admin</button>
+            <div class="brand-lockup">
+                <span class="brand-mark" aria-hidden="true">TF</span>
+                <div>
+                    <h1>Team Fund</h1>
+                    <p class="brand-caption">Contributions, at a glance</p>
+                </div>
+            </div>
+            <button class="admin-btn" onclick="openAdminModal()">Admin</button>
         </div>
 
-        <div class="balance-summary">
+        <nav class="dashboard-nav" aria-label="Dashboard sections">
+            <a href="#overview">Overview</a>
+            <a href="#spending">Spending</a>
+            <a href="#outing">Outing goal</a>
+            <a href="#ledger">Monthly ledger</a>
+        </nav>
+
+        <div class="balance-summary" id="overview">
             <div class="metric-label">Current Balance</div>
             <div class="metric-value" id="currentBalance">₹0</div>
         </div>
 
-        <div class="chart-section">
+        <div class="chart-section" id="spending">
             <h2>Spending Breakdown</h2>
             <canvas id="expenseChart"></canvas>
         </div>
@@ -682,12 +1036,12 @@
         <h2>Monthly Collection Plan</h2>
         <div class="smart-plan">
             <h3>💰 Ongoing Collection</h3>
-            <div class="plan-item"><strong>₹200 per member</strong> × 12 members = <strong>₹2,400 per month</strong></div>
-            <div class="plan-item">Collection will happen every month to sustain team activities</div>
+            <div class="plan-item"><strong>₹200 per member</strong> × 13 members = <strong>₹2,600 collected in November</strong></div>
+            <div class="plan-item">Monthly contributions support team activities</div>
         </div>
 
         <h2>Next Team Outing Planning</h2>
-        <div class="outing-timeline">
+        <div class="outing-timeline" id="outing">
             <h3>🎉 When Will We Plan the Next Outing?</h3>
             <div class="timeline-item">Our outing goal: <strong>₹20,000</strong></div>
             <div class="timeline-item">Current Balance: <strong id="outingBalance">₹0</strong></div>
@@ -713,8 +1067,8 @@
             <div class="outing-status" id="outingStatus">Keep collecting to reach the outing goal.</div>
         </div>
 
-        <h2>Monthly Fund Summary</h2>
-        <p class="summary-note">Opening balance before June: ₹14,801. Collection is ₹200 per person for 12 team members.</p>
+        <h2 id="ledger">Monthly Fund Summary</h2>
+        <p class="summary-note">Opening balance before June: ₹14,801. November collection: 13 members × ₹200 each.</p>
         <div class="ledger-table-wrap">
             <table class="ledger-table">
                 <thead>
@@ -768,12 +1122,12 @@
                 <div class="admin-section">
                     <h3>📊 Add Monthly Collection</h3>
                     <div class="admin-form">
-                        <select id="collectionMonth" required>
+                        <select id="collectionMonth" onchange="updateCollectionAmountDefault()" required>
                             <option value="">Select Month</option>
                             <option>June 2026</option><option>July 2026</option><option>August 2026</option><option>September 2026</option><option>October 2026</option><option>November 2026</option><option>December 2026</option>
                         </select>
                         <input type="number" id="collectionAmount" placeholder="Amount collected" min="0" value="2400">
-                        <small>Expected amount: ₹200 × 12 people = ₹2,400</small>
+                        <small>Saved collection for the selected month will be prefilled.</small>
                         <button type="button" onclick="addMonthlyCollection()">Save Collection</button>
                     </div>
                 </div>
@@ -819,13 +1173,15 @@
         let pendingPayments = [];
         let isLoggedIn = false;
         const openingBalance = 14801;
-        let monthlyLedger = [
+        const defaultMonthlyLedger = [
             { month: 'June 2026', collected: 2000, spent: 12783, details: 'Sekaran Mall ₹9,283 + Anantha farewell gift ₹3,500' },
             { month: 'July 2026', collected: 2200, spent: 0, details: '' },
             { month: 'August 2026', collected: 2200, spent: 1200, details: 'Team snacks box' },
             { month: 'September 2026', collected: 2200, spent: 700, details: 'Team snacks' },
-            { month: 'October 2026', collected: 2400, spent: 0, details: '' }
+            { month: 'October 2026', collected: 2400, spent: 0, details: '' },
+            { month: 'November 2026', collected: 2600, spent: 0, details: '' }
         ];
+        let monthlyLedger = defaultMonthlyLedger.map(entry => ({ ...entry }));
         let expenseDates = {
             barbeque: '2026-06-01',
             farewell: '2026-06-01'
@@ -914,6 +1270,12 @@
                 monthlyLedger.push(entry);
             }
             return entry;
+        }
+
+        function updateCollectionAmountDefault() {
+            const month = document.getElementById('collectionMonth').value;
+            const entry = monthlyLedger.find(item => item.month === month);
+            document.getElementById('collectionAmount').value = entry ? Number(entry.collected || 0) : 2400;
         }
 
         function addMonthlyCollection() {
@@ -1053,6 +1415,11 @@
             const storedLedger = localStorage.getItem('monthlyLedger');
             if (storedLedger) {
                 monthlyLedger = JSON.parse(storedLedger);
+                const savedMonths = new Set(monthlyLedger.map(entry => entry.month));
+                const missingDefaults = defaultMonthlyLedger
+                    .filter(entry => !savedMonths.has(entry.month))
+                    .map(entry => ({ ...entry }));
+                monthlyLedger.push(...missingDefaults);
             }
         }
 
