@@ -1063,6 +1063,45 @@
             letter-spacing: 1px;
         }
 
+        .brand-wordmark-separator {
+            position: relative;
+            display: inline-block;
+            width: 18px;
+            height: 6px;
+            margin: 0 0.12em;
+            vertical-align: 0.08em;
+        }
+
+        .brand-wordmark-endpoint {
+            position: absolute;
+            z-index: 1;
+            top: 50%;
+            left: 0;
+            width: 4px;
+            height: 4px;
+            border: 0.75px solid rgba(255, 255, 255, 0.92);
+            border-radius: 50%;
+            background: #121214;
+            box-shadow: 0 0 2px rgba(255, 255, 255, 0.55);
+            transform: translateY(-50%);
+        }
+
+        .brand-wordmark-endpoint:last-child {
+            right: 0;
+            left: auto;
+        }
+
+        .brand-wordmark-bar {
+            position: absolute;
+            top: 50%;
+            right: -2px;
+            left: -2px;
+            height: 2px;
+            border-radius: 3px;
+            background: var(--brand-orange);
+            transform: translateY(-50%);
+        }
+
         .dashboard-nav {
             position: absolute;
             top: 100%;
@@ -1691,7 +1730,7 @@
         <div class="topbar-inner">
             <a class="brand-lockup" href="#overview" aria-label="Team Fund home">
                 <span class="brand-mark" aria-hidden="true">TF</span>
-                <span class="brand-wordmark">TEAM-FUND</span>
+                <span class="brand-wordmark">TEAM<span class="brand-wordmark-separator" aria-hidden="true"><span class="brand-wordmark-endpoint"></span><span class="brand-wordmark-bar"></span><span class="brand-wordmark-endpoint"></span></span>FUND</span>
             </a>
             <nav class="dashboard-nav" id="dashboardNav" aria-label="Dashboard sections">
                 <a href="#overview">Overview</a>
